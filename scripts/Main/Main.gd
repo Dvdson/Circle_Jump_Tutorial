@@ -34,4 +34,5 @@ engine to execute that function as soon as it’s safe to do so.
 """
 func _on_Jumper_captured(object):
 	$Camera2D.position = object.position
+	object.capture()
 	call_deferred("spawn_circle")
