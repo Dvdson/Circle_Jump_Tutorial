@@ -18,11 +18,19 @@ func jump():
 	target = null
 	velocity = transform.x * jump_speed
 	
+func die():
+	target = null
+	queue_free()
+	
+func _on_VisibilityNotifier2D_screen_exited():
+	if !target:
+		die()
+	
 func _on_Jumper_area_entered(area):
 	target = area
 	velocity = Vector2()
 	emit_signal("captured", area)
-	target.get_node("Pivot").rotation = (position - target.position).angle()
+	# target.get_node("Pivot").rotation = (position - target.position).angle()
 
 
 func _physics_process(delta):
@@ -36,3 +44,7 @@ func _physics_process(delta):
 	trail.add_point(position)
 
 
+
+
+func _on_VisibilityNotifier2D_visibility_changed():
+	pass # Replace with function body.

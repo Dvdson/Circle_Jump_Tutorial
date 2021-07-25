@@ -30,3 +30,4 @@ polygon = PoolVector2Array( 20.5071, 0.165352, -20.5669, -20.6693, -19.9716, 20.
 gradient = SubResource( 2 )
 
 [connection signal="area_entered" from="." to="." method="_on_Jumper_area_entered"]
+[connection signal="visibility_changed" from="VisibilityNotifier2D" to="." method="_on_VisibilityNotifier2D_visibility_changed"]
