@@ -18,6 +18,9 @@ func init(_position, _radius=radius, _mode=MODES.LIMITED):
 	position = _position
 	set_mode(_mode)
 	
+	$Sprite.material = $Sprite.material.duplicate()
+	$SpriteEffect.material = $Sprite.material
+	
 	radius = _radius
 	$CollisionShape2D.shape = $CollisionShape2D.shape.duplicate()
 	$CollisionShape2D.shape.radius = radius
@@ -34,7 +37,7 @@ func _draw():
 	if jumper:
 		var r = ((radius - 50) / num_orbits) * (1 + num_orbits - current_orbits)
 		draw_circle_arc_poly(Vector2.ZERO, r, orbit_start + PI/2,
-							$Pivot.rotation + PI/2, Color(1,0,0))
+							$Pivot.rotation + PI/2, SETTINGS.theme["circle_fill"])
 func _physics_process(delta):
 	update()
 
@@ -43,6 +46,8 @@ func check_orbits():
 	#Check if the jumper completed a full circle
 	if abs($Pivot.rotation - orbit_start) > 2 * PI:
 		current_orbits -= 1
+		if SETTINGS.enable_sound:
+			$Beep.play()
 		$Label.text = str(current_orbits)
 		if current_orbits <= 0:
 			jumper.die()
@@ -63,13 +68,17 @@ func capture(target):
 
 func set_mode(_mode):
 	mode = _mode
+	var color
 	match mode:
 		MODES.STATIC:
 			$Label.hide()
+			color = SETTINGS.theme["circle_static"]
 		MODES.LIMITED:
 			current_orbits = num_orbits
 			$Label.text = str(current_orbits)
 			$Label.show()
+			color = SETTINGS.theme["circle_limited"]
+	$Sprite.material.set_shader_param("color", color)
 	
 func draw_circle_arc_poly(center, radius, angle_from, angle_to, color):
 	var nb_points = 32
