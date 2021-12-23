@@ -1,14 +1,37 @@
 [gd_scene load_steps=11 format=2]
 
-[ext_resource path="res://assets/images/circle1_n.png" type="Texture" id=1]
 [ext_resource path="res://scripts/Circle/Circle.gd" type="Script" id=2]
-[ext_resource path="res://shaders/Color.shader" type="Shader" id=3]
 [ext_resource path="res://assets/fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=4]
 [ext_resource path="res://assets/audio/89.ogg" type="AudioStream" id=5]
 
+[sub_resource type="Shader" id=6]
+code = "shader_type canvas_item;
+
+uniform vec4 color : hint_color;
+uniform float speed : hint_range(0, 20);
+uniform float radius : hint_range(0, 1);
+uniform float width : hint_range(0, 1);
+
+void fragment() {
+	vec2 center = vec2(0.5);
+	float time = TIME * speed;
+	float rad = radius -0.005 * sin(time);
+	float thickness = width + 0.05 * cos(time);
+	float dist = distance(UV, center);
+	COLOR.rgb = color.rgb;
+	COLOR.a = texture(TEXTURE, UV).a + smoothstep(thickness/2.0, 0.0, abs(dist-rad));
+}"
+
 [sub_resource type="ShaderMaterial" id=1]
-shader = ExtResource( 3 )
-shader_param/color = Color( 0.00392157, 1, 0.00392157, 1 )
+shader = SubResource( 6 )
+shader_param/color = Color( 0.0627451, 0.701961, 0.0627451, 1 )
+shader_param/speed = 0.0
+shader_param/radius = 0.296
+shader_param/width = 0.306
+
+[sub_resource type="StreamTexture" id=7]
+flags = 4
+load_path = "res://.import/circle_1.png-375bd51565f5d118aee453b97b851245.stex"
 
 [sub_resource type="CircleShape2D" id=2]
 
@@ -83,20 +106,18 @@ tracks/1/keys = {
 size = 64
 font_data = ExtResource( 4 )
 
-[node name="Circle" type="Area2D" groups=[
-"circles",
-]]
+[node name="Circle" type="Area2D" groups=["circles"]]
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
 material = SubResource( 1 )
-texture = ExtResource( 1 )
+texture = SubResource( 7 )
 
 [node name="SpriteEffect" type="Sprite" parent="."]
 self_modulate = Color( 1, 1, 1, 0 )
 material = SubResource( 1 )
 scale = Vector2( 3, 3 )
-texture = ExtResource( 1 )
+texture = SubResource( 7 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 2 )

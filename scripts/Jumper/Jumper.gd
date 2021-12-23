@@ -12,7 +12,10 @@ onready var trail = $Trail/Points
 
 func _ready():
 	$Sprite.material.set_shader_param("color", SETTINGS.theme["player_body"])
-	$Trail/Points.default_color = SETTINGS.theme["player_trail"]
+	var trail_color = SETTINGS.theme["player_trail"]
+	trail.gradient.set_color(1, trail_color)
+	trail_color.a = 0
+	trail.gradient.set_color(0, trail_color)
 
 func _unhandled_input(event):
 	if target and event is InputEventScreenTouch and event.is_pressed():
