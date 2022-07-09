@@ -1,8 +1,15 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://gui/BaseScreen.tscn" type="PackedScene" id=1]
 [ext_resource path="res://assets/images/buttons/right.png" type="Texture" id=2]
 [ext_resource path="res://assets/images/buttons/gear.png" type="Texture" id=3]
+
+[sub_resource type="DynamicFontData" id=1]
+font_path = "res://assets/fonts/Xolonium-Regular.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 32
+font_data = SubResource( 1 )
 
 [node name="CircleJump" instance=ExtResource( 1 )]
 
@@ -30,3 +37,17 @@ texture_normal = ExtResource( 3 )
 [node name="buttons2" parent="MarginContainer/VBoxContainer" index="2"]
 margin_top = 559.0
 margin_bottom = 559.0
+
+[node name="buttons3" type="HBoxContainer" parent="MarginContainer/VBoxContainer" index="3"]
+margin_top = 709.0
+margin_right = 440.0
+margin_bottom = 754.0
+alignment = 1
+
+[node name="About" type="Button" parent="MarginContainer/VBoxContainer/buttons3" index="0" groups=["buttons"]]
+margin_left = 151.0
+margin_right = 289.0
+margin_bottom = 45.0
+custom_fonts/font = SubResource( 2 )
+text = "ABOUT"
+flat = true

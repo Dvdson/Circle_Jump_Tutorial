@@ -22,11 +22,18 @@ func register_buttons():
 	var buttons = get_tree().get_nodes_in_group("buttons")
 	for button in buttons:
 		button.connect("pressed", self, "_on_button_pressed", [button])
+		match button.name:
+			"Sound":
+				button.texture_normal = sound_buttons[SETTINGS.enable_sound]
+			"Music":
+				button.texture_normal = music_buttons[SETTINGS.enable_music]
 
-func _on_button_pressed(button:TextureButton):
+func _on_button_pressed(button:BaseButton):
 	if SETTINGS.enable_sound:
 		$Click.play()
 	match button.name:
+		"About":
+			change_screen($AboutScreen)
 		"Home":
 			change_screen($TitleScreen)
 		"Play":
@@ -38,9 +45,11 @@ func _on_button_pressed(button:TextureButton):
 		"Sound":
 			SETTINGS.enable_sound = !SETTINGS.enable_sound
 			button.texture_normal = sound_buttons[SETTINGS.enable_sound]
+			SETTINGS.save_settings()
 		"Music":
 			SETTINGS.enable_music = !SETTINGS.enable_music
 			button.texture_normal = music_buttons[SETTINGS.enable_music]
+			SETTINGS.save_settings()
 
 func change_screen(new_screen):
 	if current_screen:

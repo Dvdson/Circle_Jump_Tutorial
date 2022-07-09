@@ -5,15 +5,13 @@ var Jumper = preload("res://objects/Jumper.tscn")
 
 var player
 var score = 0 setget set_score
+var num_circles = 0
 var highscore = 0
+var new_record = false
 var level = 0
+var bonus = 0 setget set_bonus
 
-func set_score(value):
-		score = value
-		$HUD.update_score(score)
-		if score > 0 and score% SETTINGS.circles_per_level == 0:
-			level += 1
-			$HUD.show_message("Level %s" % str(level))
+
 
 func _ready():
 	randomize()
@@ -21,8 +19,12 @@ func _ready():
 	$HUD.hide()
 	
 func new_game():
+	new_record=false
 	self.score = 0
+	self.bonus = 0
+	self.num_circles = 0
 	level = 1
+	$HUD.update_score(score, 0)
 	$Camera2D.position = $StartPosition.position
 	
 	player = Jumper.instance()
@@ -36,6 +38,7 @@ func new_game():
 	$HUD.show_message('GO!')
 	
 	if SETTINGS.enable_music:
+		$Music.volume_db = 0
 		$Music.play()
 	
 	
@@ -46,8 +49,15 @@ func spawn_circle(_position=null):
 		var y = rand_range(-500, -400)
 		_position = player.target.position + Vector2(x,y)
 	add_child(c)
+	c.connect("full_orbit", self, "set_bonus", [1])
 	c.init(_position, level)
 
+func set_score(value):
+	$HUD.update_score(score, value)
+	score = value
+	if !new_record && score > highscore:
+		$HUD.show_message("New Record!")
+		new_record=true
 
 """
 Note that because this function is called during physics processing, we’ll get 
@@ -58,7 +68,12 @@ func _on_Jumper_captured(object):
 	$Camera2D.position = object.position
 	object.capture(player)
 	call_deferred("spawn_circle")
-	self.score += 1
+	self.score += 1 * bonus
+	self.bonus += 1
+	num_circles += 1
+	if num_circles > 0 and num_circles % SETTINGS.circles_per_level == 0:
+		level += 1
+		$HUD.show_message("Level %s" % str(level))
 	
 func _on_Jumper_died():
 	if score > highscore:
@@ -68,7 +83,7 @@ func _on_Jumper_died():
 	$Screens.game_over(score, highscore)
 	$HUD.hide()
 	if SETTINGS.enable_music:
-		$Music.stop()
+		fade_music()
 		
 func load_score():
 	var f = File.new()
@@ -83,4 +98,13 @@ func save_score():
 	f.store_var(highscore)
 	f.close()
 
+func fade_music():
+	$MusicFade.interpolate_property($Music, "volume_db",
+		0, -50, 1.0, Tween.TRANS_SINE, Tween.EASE_IN)
+	$MusicFade.start()
+	yield($MusicFade, "tween_all_completed")
+	$Music.stop()
 
+func set_bonus(value):
+	bonus = value
+	$HUD.update_bonus(bonus)

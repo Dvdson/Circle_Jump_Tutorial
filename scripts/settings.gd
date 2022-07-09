@@ -1,6 +1,8 @@
 extends Node
 
 var score_file = "user://highscore.save"
+var settings_file = "user://setting.save"
+var file_pass = "8061B02A80395DF141036C164D4D5C0E75CFC91DD4709F625FC35CF43C9196287505588B4CB37A7050F4033C709DB7A572AA5F88D614DD0E26B197BB0D916678"
 var enable_sound = true
 var enable_music = true
 
@@ -44,4 +46,27 @@ static func rand_weighted(weights):
 		if num < weights[i]:
 			return i
 		num -= weights[i]
+		
+
+func _ready():
+	load_settings()
+
+func save_settings():
+	var f = File.new()
+	var this = inst2dict(self)
+	f.open_encrypted_with_pass(settings_file, File.WRITE, file_pass)
+	f.store_string(var2str(this))
+	f.close()
+	
+func load_settings():
+	var f = File.new()
+	if f.file_exists(settings_file):
+		f.open_encrypted_with_pass(settings_file, File.READ, file_pass)
+		if f.get_as_text() == '':
+			return null
+		print(f.get_path_absolute())
+		var this = str2var(f.get_as_text())
+		enable_sound = this['enable_sound']
+		enable_music = this['enable_music']
+		f.close()
 

@@ -13,3 +13,8 @@ func disappear():
 	tween.interpolate_property(self, "offset:x", 0, 500,
 					0.4, Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 	tween.start()
+
+func _on_TextEdit_meta_clicked(meta):
+	OS.shell_open(meta)
+
+
